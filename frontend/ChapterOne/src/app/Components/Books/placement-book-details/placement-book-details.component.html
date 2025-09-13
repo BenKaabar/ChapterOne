@@ -1,0 +1,120 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title" routerLink="/Dashboard/PlacementDetails" (click)="reload()">All Categorie Details</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by name, author, or placement..." (input)="onSearch()" />
+        <div></div>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Author</th>
+                        <th>Categorie</th>
+                        <th>Placement </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let book of paginatedBook; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ book.name }}</td>
+                        <td>{{ book.primaryAuthor.authorName }}</td>
+                        <td>{{ book.categorie.name }}</td>
+                        <td>{{ book.bookPlacement }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="openConsultModal(book)"><i
+                                    class="bi bi-eye"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredBooks.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Books AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Consulter Book -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">Book details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedBook">
+                <tr>
+                    <td>
+                        <p><strong>Book name : </strong> {{ selectedBook.name }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Author : </strong> {{ selectedBook.primaryAuthor.authorName }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Book status : </strong> {{ selectedBook.status }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book Language : </strong> {{ selectedBook.language }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Book Placement : </strong> {{ selectedBook.bookPlacement }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book Categorie : </strong> {{ selectedBook.categorie.name }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>ISBN : </strong> {{ selectedBook.ISBN }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book pages : </strong> {{ selectedBook.pages }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Published Date : </strong> {{ selectedBook.publishedDate }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Publisher : </strong> {{ selectedBook.publisher }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Borrow count : </strong> {{ selectedBook.borrowCount }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Description : </strong> {{ selectedBook.description }}</p>
+                    </td>
+                </tr>
+            </div>
+        </div>
+    </div>
+</div>

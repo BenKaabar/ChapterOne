@@ -1,0 +1,311 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">All Available Books</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by name, author, categorie, or language..." (input)="onSearch()" />
+        <button class="add-btn" (click)="openCreateBookModal()">
+            <i class="bi bi-plus fs-6"></i> Add new book
+        </button>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Author</th>
+                        <th>Categorie</th>
+                        <th>borrowed times </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let book of paginatedBook; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ book.name }}</td>
+                        <td>{{ book.primaryAuthor.authorName }}</td>
+                        <td>{{ book.categorie.name }}</td>
+                        <td>{{ book.borrowCount }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="openConsultModal(book)"><i
+                                    class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-2" (click)="openUpdateModal(book)"><i
+                                    class="bi bi-pencil"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredBooks.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Books AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Consulter Book -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">Book details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedBook">
+                <tr>
+                    <td>
+                        <p><strong>Book name : </strong> {{ selectedBook.name }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Author : </strong> {{ selectedBook.primaryAuthor.authorName }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Book status : </strong> {{ selectedBook.status }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book Language : </strong> {{ selectedBook.language }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Book Placement : </strong> {{ selectedBook.bookPlacement }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book Categorie : </strong> {{ selectedBook.categorie.name }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>ISBN : </strong> {{ selectedBook.ISBN }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book pages : </strong> {{ selectedBook.pages }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Published Date : </strong> {{ selectedBook.publishedDate }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Publisher : </strong> {{ selectedBook.publisher }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Borrow count : </strong> {{ selectedBook.borrowCount }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Description : </strong> {{ selectedBook.description }}</p>
+                    </td>
+                </tr>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Book -->
+<div class="modal fade" id="updateBookModal" tabindex="-1" aria-labelledby="updateBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateBookModalLabel">Update Book</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeUpdateModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateBookForm" (ngSubmit)="updateBook()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" formControlName="name" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Description</label>
+                            <input type="text" formControlName="description" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">ISBN</label>
+                            <input type="number" formControlName="ISBN" class="form-control" placeholder="Optional" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Book Placement</label>
+                            <input type="text" formControlName="bookPlacement" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Published Date</label>
+                            <input type="date" formControlName="publishedDate" class="form-control"
+                                placeholder="Optional" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Publisher</label>
+                            <input type="text" formControlName="publisher" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Pages</label>
+                            <input type="number" formControlName="pages" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Status</label>
+                            <select formControlName="status" class="form-select">
+                                <option [value]="bookStatus.AVAILABLE">AVAILABLE</option>
+                                <option [value]="bookStatus.BORROWED">BORROWED</option>
+                                <option [value]="bookStatus.RESERVED">RESERVED</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Primary Author</label>
+                            <select formControlName="primaryAuthor" class="form-select">
+                                <option *ngFor="let author of allAuthors" [value]="author.idAuthor">
+                                    {{ author.authorName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Secondary Author</label>
+                            <select formControlName="secondaryAuthor" class="form-select">
+                                <option *ngFor="let author of allAuthors" [value]="author.idAuthor">
+                                    {{ author.authorName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Language</label>
+                            <select formControlName="language" class="form-select">
+                                <option *ngFor="let lang of allLanguages" [value]="lang">
+                                    {{ lang }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Category</label>
+                            <select formControlName="categorie" class="form-select">
+                                <option *ngFor="let cat of allCategories" [value]="cat.idBookCategorie">
+                                    {{ cat.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Book -->
+<div class="modal fade" id="createBookModal" tabindex="-1" aria-labelledby="createBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createBookModalLabel">Create Book</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeCreateBookModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createBookForm" (ngSubmit)="createBook()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" formControlName="name" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Description</label>
+                            <input type="text" formControlName="description" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">ISBN</label>
+                            <input type="number" formControlName="ISBN" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Book Placement</label>
+                            <input type="text" formControlName="bookPlacement" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Published Date</label>
+                            <input type="date" formControlName="publishedDate" class="form-control"
+                                placeholder="Optional" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Publisher</label>
+                            <input type="text" formControlName="publisher" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Pages</label>
+                            <input type="number" formControlName="pages" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Status</label>
+                            <select formControlName="status" class="form-select">
+                                <option [value]="bookStatus.AVAILABLE">AVAILABLE</option>
+                                <option [value]="bookStatus.BORROWED">BORROWED</option>
+                                <option [value]="bookStatus.RESERVED">RESERVED</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Primary Author</label>
+                            <select formControlName="primaryAuthor" class="form-select">
+                                <option *ngFor="let author of allAuthors" [value]="author.idAuthor">
+                                    {{ author.authorName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Secondary Author</label>
+                            <select formControlName="secondaryAuthor" class="form-select">
+                                <option *ngFor="let author of allAuthors" [value]="author.idAuthor">
+                                    {{ author.authorName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Language</label>
+                            <select formControlName="language" class="form-select">
+                                <option *ngFor="let lang of allLanguages" [value]="lang">
+                                    {{ lang }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Category</label>
+                            <select formControlName="categorie" class="form-select">
+                                <option *ngFor="let cat of allCategories" [value]="cat.idBookCategorie">
+                                    {{ cat.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-3">
+                        <button type="submit" [disabled]="!createBookForm.valid" (click)="createBook()">Create</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

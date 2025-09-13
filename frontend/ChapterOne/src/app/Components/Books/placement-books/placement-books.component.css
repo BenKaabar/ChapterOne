@@ -1,0 +1,36 @@
+.bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.card {
+    width: 150px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    margin-left: 25%;
+}
+
+.light .card {
+    background-color: #D9C3B1;
+    color: #1E293B;
+}
+
+.dark .card {
+    background-color: #4B3832;
+    color: #F9FAFB;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+}

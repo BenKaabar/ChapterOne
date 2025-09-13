@@ -1,0 +1,184 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">All Collections</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by name" (input)="onSearch()" />
+        <button class="add-btn" (click)="openCreateBookModal()">
+            <i class="bi bi-plus fs-6"></i> Add new collection
+        </button>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Number of books</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let collection of paginatedCollection; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ collection.name }}</td>
+                        <td>{{ collection.number }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2"
+                                (click)="openConsultModal(collection)"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-2" (click)="openUpdateModal(collection)"><i
+                                    class="bi bi-pencil"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredCollections.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Collection AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Consulter Book -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">Collection details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedCollection">
+                <p><strong>Collection name : </strong> {{ selectedCollection.name }}</p>
+                <p><strong>Number of Book : </strong> {{ selectedCollection.number }}</p>
+                <div class="table-wrapper" *ngIf="selectedCollection.bookRelated.length > 1">
+                    <table class="table table-hover align-middle text-center">
+                        <thead class="table-header">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Language</th>
+                                <th>Author</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let book of paginatedBook; let i=index">
+                                <td>{{ (pageBook - 1) * itemsPerPageBook + i + 1 }}</td>
+                                <td>{{ book.name }}</td>
+                                <td>{{ book.language }}</td>
+                                <td>{{ book.primaryAuthor.authorName }}</td>
+                                <td>{{ book.status }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="paginations" *ngIf="totalPagesBook > 1">
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabledBook}">
+                                <a class="page-link" (click)="goToPreviousPageBook()">Previous</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">Page {{ pageBook }} of {{ totalPagesBook }}</span>
+                            </li>
+                            <li class="page-item" [ngClass]="{'disabled': isNextPageDisabledBook}">
+                                <a class="page-link" (click)="goToNextPageBook()">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Collection -->
+<div class="modal fade" id="updateBookModal" tabindex="-1" aria-labelledby="updateBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateBookModalLabel">Update Collection</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeUpdateModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateCollectionForm" (ngSubmit)="updateCollection()">
+                    <div class="candidature" style="min-height: 240px;">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" formControlName="name" class="form-control" />
+                        </div>
+
+                        <div class="dropdown" [class.show]="dropdownOpen">
+                            <label class="form-label">Add Books To Collection</label><br>
+
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                (click)="toggleDropdown($event)">
+                                Add Books
+                            </button>
+                            <ul class="dropdown-menu scrollable-dropdown" [class.show]="dropdownOpen">
+                                <li *ngFor="let book of allBooks">
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" [value]="book.idBook" (change)="onBookSelect($event)"
+                                            [checked]="selectedBooks.includes(book.idBook)" />
+                                        {{ book.name }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Book -->
+<div class="modal fade" id="createBookModal" tabindex="-1" aria-labelledby="createBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createBookModalLabel">Create Collection</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeCreateBookModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createCollectionForm" (ngSubmit)="createBook()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" formControlName="name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-3">
+                        <button type="submit" [disabled]="!createCollectionForm.valid"
+                            (click)="createBook()">Create</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

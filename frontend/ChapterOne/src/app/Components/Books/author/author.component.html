@@ -1,0 +1,167 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">All Authors</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by Author name " (input)="onSearch()" />
+        <button class="add-btn" (click)="openCreateAuthorModal()">
+            <i class="bi bi-plus fs-6"></i> Add new Author
+        </button>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>Author Name</th>
+                        <th>Number of Authors </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let author of paginatedAuthor; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ author.authorName }}</td>
+                        <td>{{ author.bookHave }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="openConsultModal(author)"><i
+                                    class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-2" (click)="openUpdateModal(author)"><i
+                                    class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(author)"><i
+                                    class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredAuthors.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Authors AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Consulter Author -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">Author details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedAuthor">
+                <tr style=" display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px">
+                    <td style="width: 100%;">
+                        <strong>Author name : </strong> <br>
+                        {{ selectedAuthor.authorName }}
+                    </td>
+                    <td>
+                        <strong>Book write : </strong> <br>
+                        {{ selectedAuthor.bookHave }} book
+                    </td>
+                </tr>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Author -->
+<div class="modal fade" id="updateAuthorModal" tabindex="-1" aria-labelledby="updateAuthorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateAuthorModalLabel">Update Author</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeUpdateModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateAuthorForm" (ngSubmit)="updateAuthor()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Author name</label>
+                            <input type="text" formControlName="authorName" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Number of Authors </label>
+                            <input type="number" formControlName="bookHave" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Author -->
+<div class="modal fade" id="createAuthorModal" tabindex="-1" aria-labelledby="createAuthorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createAuthorModalLabel">Create Author</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeCreateAuthorModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createAuthorForm" (ngSubmit)="createAuthor()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Author name</label>
+                            <input type="text" formControlName="authorName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-3">
+                        <button type="submit" [disabled]="!createAuthorForm.valid"
+                            (click)="createAuthor()">Create</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Author -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Deleting Author</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeDeleteModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedAuthor">
+                <h6>Are you sure you want to <span style="color: red;">delete </span> <strong>{{
+                        selectedAuthor.authorName
+                        }}</strong>
+                </h6>
+            </div>
+            <div class="modal-footer" *ngIf="selectedAuthor">
+                <button type="button" class="btn btn-danger"
+                    (click)="DeleteAuthor(selectedAuthor.idAuthor)">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

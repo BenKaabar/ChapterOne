@@ -1,0 +1,286 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">All Active Users</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by name, day of birth or phone number ..." (input)="onSearch()" />
+        <button class="add-btn" (click)="openCreateUserModal()">
+            <i class="bi bi-plus fs-6"></i> Add new user
+        </button>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Phone number</th>
+                        <th>Date of birth</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of paginatedUser; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.gender }}</td>
+                        <td>{{ user.phone_number1 }}</td>
+                        <td>{{ user.date_of_birth | date: 'dd/MM/yyyy' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="openConsultModal(user)"><i
+                                    class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-2" (click)="openUpdateModal(user)"><i
+                                    class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" (click)="openBlockModal(user)"><i
+                                    class="bi bi-ban"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredUsers.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Users AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Consulter User -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">User details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body consult" *ngIf="selectedUser">
+                <tr>
+                    <td>
+                        <p><strong>ID : </strong> {{ selectedUser.iduser }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Phone number 1 : </strong> {{ selectedUser.phone_number1 }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Username : </strong> {{ selectedUser.username }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Phone number 2 : </strong> {{selectedUser.phone_number2}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Gender : </strong> {{ selectedUser.gender }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Book borrowed : </strong> {{ selectedUser.book_borrowed }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Date of Birth : </strong>{{ selectedUser.date_of_birth }}</p>
+                    </td>
+                    <td>
+                        <p><strong>User date joined : </strong> {{ selectedUser.date_user_create }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Work : </strong> {{ selectedUser.work }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Membership status : </strong> {{ selectedUser.membership_status }}</p>
+                    </td>
+                </tr>
+                <tr>
+
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Categorie : </strong> {{ selectedUser.categorie }}</p>
+                    </td>
+                    <td>
+                        <p><strong>Membership date : </strong> {{ selectedUser.membership_date_start }} - {{
+                            selectedUser.membership_date_end }}</p>
+                    </td>
+                </tr>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Block User -->
+<div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="blockModalLabel">Blocking User</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeBlockModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedUser">
+                <h6>Are you sure you want to <span style="color: red;">block </span> <strong>{{ selectedUser.username
+                        }}</strong> with membership status
+                    <strong> {{ selectedUser.membership_status }} </strong>
+                </h6>
+                <h6> membership start in <strong>{{selectedUser.membership_date_start }} </strong>
+                    and end in <strong>{{selectedUser.membership_date_end }}</strong></h6>
+            </div>
+            <div class="modal-footer" *ngIf="selectedUser">
+                <button type="button" class="btn btn-danger" (click)="blockuser(selectedUser.iduser)">Block</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ajouter User -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createUserModalLabel">create User</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeCreateUserModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createUserForm" (ngSubmit)="createUser()">
+                    <div class="candidature">
+                        <div class="item">
+                            <label>Username</label>
+                            <input type="text" formControlName="username" class="form-control">
+                        </div>
+                        <div class="item">
+                            <label>Work</label>
+                            <input type="text" formControlName="work" class="form-control">
+                        </div>
+                        <div class="item">
+                            <label>Phone number 1</label>
+                            <input type="text" formControlName="phone_number1" class="form-control">
+                        </div>
+                        <div class="item">
+                            <label>Date of birth</label>
+                            <input type="date" formControlName="date_of_birth" class="form-control">
+                        </div>
+                        <div class="item">
+                            <label>Phone number 2</label>
+                            <input type="text" formControlName="phone_number2" class="form-control"
+                                placeholder="Optional">
+                        </div>
+                        <div class="item">
+                            <label>Gender</label>
+                            <select formControlName="gender" class="form-select">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-3">
+                        <button type="submit" [disabled]="!createUserForm.valid" (click)="createUser()">Create</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update User -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateUserModalLabel">Update User</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeUpdateModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateUserForm" (ngSubmit)="updateUser()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Username</label>
+                            <input type="text" formControlName="username" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Phone number 1</label>
+                            <input type="text" formControlName="phone_number1" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Phone number 2</label>
+                            <input type="text" formControlName="phone_number2" class="form-control"
+                                placeholder="Optional" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Book borrowed</label>
+                            <input type="number" formControlName="book_borrowed" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Categorie</label>
+                            <select formControlName="categorie" class="form-select">
+                                <option [value]="categorie.Youths">Youths</option>
+                                <option [value]="categorie.Children">Children</option>
+                                <option [value]="categorie.Old">Old</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Gender</label>
+                            <select formControlName="gender" class="form-select">
+                                <option [value]="Gender.Male">Male</option>
+                                <option [value]="Gender.Female">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" formControlName="date_of_birth" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Membership Status</label>
+                            <select formControlName="membership_status" class="form-select">
+                                <option [value]="status.Active">Active</option>
+                                <option [value]="status.Inactive">Inactive</option>
+                                <option [value]="status.Block">Block</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Membership Date Start</label>
+                            <input type="date" formControlName="membership_date_start" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Membership Date End</label>
+                            <input type="date" formControlName="membership_date_end" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

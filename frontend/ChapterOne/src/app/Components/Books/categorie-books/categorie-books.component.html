@@ -1,0 +1,164 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">All Categories</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by name, Ref number..." (input)="onSearch()" />
+        <button class="add-btn" (click)="openCreateCategorieModal()">
+            <i class="bi bi-plus fs-6"></i> Add new categorie
+        </button>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Ref number</th>
+                        <th>Number Of Books In Categorie </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let categorie of paginatedCategorie; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ categorie.name }}</td>
+
+                        <td><i class="bi bi-square-fill fs fs-3" [style.color]="categorie.color"></i></td>
+                        <td>{{ categorie.number }}</td>
+                        <td>{{ categorie.numberOfBooksInCategorie }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="openConsultModal(categorie)"><i
+                                    class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-2" (click)="openUpdateModal(categorie)"><i
+                                    class="bi bi-pencil"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredCategories.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Categorie AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Consulter Categorie -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">Categorie details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedCategorie">
+                <div class="candidature">
+                    <div><strong>Categorie name : </strong> {{ selectedCategorie.name }}</div>
+                    <div><strong>Color : </strong> <i class="bi bi-square-fill fs fs-3" [style.color]="selectedCategorie.color"></i></div>
+                    <div><strong>Ref Number : </strong> {{ selectedCategorie.number }}</div>
+                    <div> <strong>Total Books in Categorie : </strong> {{ selectedCategorie.numberOfBooksInCategorie }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Categorie -->
+<div class="modal fade" id="updateCategorieModal" tabindex="-1" aria-labelledby="updateCategorieModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateCategorieModalLabel">Update Categorie</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeUpdateModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateCategorieForm" (ngSubmit)="updateCategorie()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" formControlName="name" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Color</label>
+                            <input type="color" formControlName="color" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">number</label>
+                            <input type="number" formControlName="number" class="form-control" placeholder="Optional" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Number Of Books In Categorie</label>
+                            <input type="number" formControlName="numberOfBooksInCategorie" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Categorie -->
+<div class="modal fade" id="createCategorieModal" tabindex="-1" aria-labelledby="createCategorieModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createCategorieModalLabel">Create Categorie</h1>
+                <button type="button" class="btn-close" aria-label="Close"
+                    (click)="closeCreateCategorieModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createCategorieForm" (ngSubmit)="createCategorie()">
+                    <div class="candidature">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" formControlName="name" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">color</label>
+                            <input type="color" formControlName="color" class="form-control" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Number</label>
+                            <input type="number" formControlName="number" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-3">
+                        <button type="submit" [disabled]="!createCategorieForm.valid"
+                            (click)="createCategorie()">Create</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

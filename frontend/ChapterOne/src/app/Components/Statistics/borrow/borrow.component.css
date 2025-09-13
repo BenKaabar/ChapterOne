@@ -1,0 +1,126 @@
+.top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chartButton {
+    margin: 0px 6px;
+}
+
+.light .top .chartButton {
+    background-color: #D9C3B1;
+    color: #1E293B;
+    border-radius: 20px;
+    border: none;
+    padding: 6px 16px;
+    cursor: pointer;
+}
+
+.dark .top .chartButton {
+    background-color: #4B3832;
+    color: #F9FAFB;
+    border-radius: 20px;
+    border: none;
+    padding: 6px 16px;
+    cursor: pointer;
+}
+
+.light .top .chartButton:hover {
+    background-color: #D1C4B0;
+}
+
+.dark .top .chartButton:hover {
+    background-color: #4B443B;
+}
+
+select {
+    margin: 0px 6px;
+}
+
+.light select {
+    background-color: #D9C3B1;
+    color: #1E293B;
+    appearance: none;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%231E293B' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 30px;
+}
+
+.dark select {
+    background-color: #4B3832;
+    color: #F9FAFB;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23F9FAFB' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 30px;
+}
+
+
+
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+    margin: 0px 6px;
+    text-align: center;
+
+}
+
+.dropdown-toggle {
+    padding: 6px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.light .dropdown-toggle {
+    background-color: #D9C3B1;
+    color: #1E293B;
+}
+
+.dark .dropdown-toggle {
+    background-color: #4B3832;
+    color: #F9FAFB;
+}
+
+.dark .dropdown-list {
+    background-color: #4B3832;
+    color: #F9FAFB;
+}
+.light .dropdown-list {
+     background-color: #D9C3B1;
+    color: #1E293B;
+}
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 12rem;
+    /* ~6 items */
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+}
+
+.dropdown-list li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-list li:hover {
+    background: rgba(0, 0, 0, 0.1);
+}

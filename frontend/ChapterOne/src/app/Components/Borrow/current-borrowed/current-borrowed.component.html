@@ -1,0 +1,287 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">All Current Borrowed Books</h4>
+        <input type="text" [(ngModel)]="searchTerm" class="form-control search-input"
+            placeholder="Search by name, book name or date taken ..." (input)="onSearch()" />
+        <div></div>
+        <div></div>
+    </div>
+
+    <div class="bottom">
+        <div class="table-wrapper">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-header">
+                    <tr>
+                        <th>#</th>
+                        <th>User Name</th>
+                        <th>Book Name</th>
+                        <th>Date Book Takes</th>
+                        <th>Initial Date Book returned</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let borrow of paginatedBorrow; let i=index">
+                        <td>{{ (page - 1) * itemsPerPage + i + 1 }}</td>
+                        <td>{{ borrow.user.username }}</td>
+                        <td>{{ borrow.book.name }}</td>
+                        <td>{{ borrow.borrowDate | date: 'dd/MM/yyyy' }}</td>
+                        <td>{{ borrow.returnDate | date: 'dd/MM/yyyy' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="openConsultModal(borrow)"><i
+                                    class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning me-2" (click)="openUpdateModal(borrow)"><i
+                                    class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-success me-2" (click)="openAvailableModal(borrow)"><i
+                                    class="bi bi-check-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="filteredBorrows.length < 1 ">
+            <h1 style="color: red; text-align:  center;">
+                No Book Borrow AVAILABLE
+            </h1>
+        </div>
+        <div class="paginations" *ngIf="totalPages > 1">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" [ngClass]="{'disabled': isPreviousPageDisabled}">
+                        <a class="page-link" (click)="goToPreviousPage()">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ totalPages }}</span>
+                    </li>
+                    <li class="page-item" [ngClass]="{'disabled': isNextPageDisabled}">
+                        <a class="page-link" (click)="goToNextPage()">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Consulter Borrow -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consultModalLabel">Borrow details</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeConsultModal()"></button>
+            </div>
+            <div class="modal-body consult" *ngIf="selectedBorrowedList">
+                <table>
+                    <tr>
+                        <td>
+                            <p><strong>Name : </strong> {{ selectedBorrowedList.user.username }}</p>
+                        </td>
+                        <td>
+                            <p><strong>Author Name : </strong> {{ selectedBorrowedList.book.primaryAuthor.authorName }}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p><strong>Status : </strong> {{ selectedBorrowedList.user.membership_status }}</p>
+                        </td>
+                        <td>
+                            <p><strong>Book Name : </strong> {{selectedBorrowedList.book.name}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p><strong>Gender : </strong> {{ selectedBorrowedList.user.gender }}</p>
+                        </td>
+                        <td>
+                            <p><strong>Categorie : </strong> {{ selectedBorrowedList.book.categorie.name }}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p><strong>Phone number : </strong> {{ selectedBorrowedList.user.phone_number1 }}</p>
+                        </td>
+                        <td>
+                            <p><strong>Placement : </strong> {{ selectedBorrowedList.book.bookPlacement }}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p><strong>Date Book Takeed : </strong> {{ selectedBorrowedList.borrowDate }}</p>
+                        </td>
+                        <td>
+                            <p><strong>Date Book Returned : </strong> {{ selectedBorrowedList.returnDate }}</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ajouter Borrow -->
+<div class="modal fade" id="createBorrowModal" tabindex="-1" aria-labelledby="createBorrowModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createBorrowModalLabel">create User</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeCreateBorrowModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createBorrowForm" (ngSubmit)="createBorrow()">
+                    <div class="candidatureCreate">
+                        <div class="item">
+                            <label>Date taken</label>
+                            <input type="date" formControlName="borrowDate" class="form-control">
+                        </div>
+                        <div class="item">
+                            <label>Date returned</label>
+                            <input type="date" formControlName="returnDate" class="form-control">
+                        </div>
+                        <!-- Select Book -->
+                        <div class="dropdown" [class.show]="dropdownOpenBook">
+                            <label class="form-label">Select Book</label><br>
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                (click)="toggleDropdownBook($event)">
+                                Add Books
+                            </button>
+                            <ul class="dropdown-menu scrollable-dropdown" [class.show]="dropdownOpenBook">
+                                <li *ngFor="let book of allBooks">
+                                    <label class="dropdown-item">
+                                        <input type="radio" formControlName="idBook" [value]="book.idBook" />
+                                        {{ book.name }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Select User -->
+                        <div class="dropdown" [class.show]="dropdownOpenUser">
+                            <label class="form-label">Select User</label><br>
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                (click)="toggleDropdownUser($event)">
+                                Add Users
+                            </button>
+                            <ul class="dropdown-menu scrollable-dropdown" [class.show]="dropdownOpenUser">
+                                <li *ngFor="let user of allUsers">
+                                    <label class="dropdown-item">
+                                        <input type="radio" formControlName="idUser" [value]="user.iduser" />
+                                        {{ user.username }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-3">
+                        <button type="submit" [disabled]="!createBorrowForm.valid"
+                            (click)="createBorrow()">Create</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Borrow -->
+<div class="modal fade" id="updateBorrowModal" tabindex="-1" aria-labelledby="updateBorrowModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" [ngClass]="theme">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateBorrowModalLabel">Update Borrow</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeUpdateModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateBorrowForm" (ngSubmit)="updateBorrow()">
+                    <div class="candidatureUpdate">
+                        <div class="item">
+                            <label>Date taken</label>
+                            <input type="date" formControlName="borrowDate" class="form-control">
+                        </div>
+                        <div class="item">
+                            <label>Date returned</label>
+                            <input type="date" formControlName="returnDate" class="form-control">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label m-0">Book Status</label>
+                            <select formControlName="BookStatus" class="form-select">
+                                <option [value]="bookStatus.AVAILABLE">AVAILABLE</option>
+                                <option [value]="bookStatus.BORROWED">BORROWED</option>
+                                <option [value]="bookStatus.RESERVED">RESERVED</option>
+                            </select>
+                        </div>
+                        <div class="dropdown" [class.show]="dropdownOpenBook">
+                            <label class="form-label">Select Book</label><br>
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                (click)="toggleDropdownBook($event)">
+                                Add Books
+                            </button>
+                            <ul class="dropdown-menu scrollable-dropdown" [class.show]="dropdownOpenBook">
+                                <li *ngFor="let book of allBooks">
+                                    <label class="dropdown-item">
+                                        <input type="radio" formControlName="idBook" [value]="book.idBook" />
+                                        {{ book.name }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dropdown" [class.show]="dropdownOpenUser">
+                            <label class="form-label">Select User</label><br>
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                (click)="toggleDropdownUser($event)">
+                                Add Users
+                            </button>
+                            <ul class="dropdown-menu scrollable-dropdown" [class.show]="dropdownOpenUser">
+                                <li *ngFor="let user of allUsers">
+                                    <label class="dropdown-item">
+                                        <input type="radio" formControlName="idUser" [value]="user.iduser" />
+                                        {{ user.username }}
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirm Availability Borrow -->
+<div class="modal fade" id="updateAvailableModal" tabindex="-1" aria-labelledby="updateAvailableModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateAvailableModalLabel">Confirm Availability</h1>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeAvailableModal()"></button>
+            </div>
+
+            <div class="modal-body" *ngIf="selectedBorrowedList">
+                <h6>
+                    Are you sure you want to mark the book
+                    <strong>{{ selectedBorrowedList.book.name }}</strong> as
+                    <span style="color: green;">Available</span>?
+                </h6>
+                <h6>
+                    This book was borrowed by <strong>{{ selectedBorrowedList.user.username }}</strong>
+                    from <strong>{{ selectedBorrowedList.borrowDate }}</strong>
+                    until <strong>{{ selectedBorrowedList.returnDate }}</strong>.
+                </h6>
+            </div>
+
+            <div class="modal-footer" *ngIf="selectedBorrowedList">
+                <button type="button" class="btn btn-success" (click)="AvailableBorrow(selectedBorrowedList.idBorrow)">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

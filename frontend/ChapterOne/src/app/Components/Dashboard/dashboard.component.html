@@ -1,0 +1,126 @@
+<div class="main" [ngClass]="theme">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Top -->
+    <div class="sidebarTop">
+      <h2>ChapterOne</h2>
+      <hr>
+    </div>
+
+    <!-- Middle -->
+    <div class="sidebarMiddle">
+
+      <details class="item details-dropdown" (toggle)="closeOthers($event)">
+        <summary>
+          <span class="title">
+            <i class="bi bi-people fs-3"></i>
+            <h5>Users</h5>
+          </span>
+          <i class="bi bi-chevron-down arrow"></i>
+        </summary>
+        <div class="dropdown-content">
+          <div [routerLink]="['/Dashboard/ActiveUsers']">
+            <h6><i class="bi bi-person-check fs fs-3"></i> Active users </h6>
+          </div>
+          <div [routerLink]="['/Dashboard/InactiveUsers']">
+            <h6><i class="bi bi-person-x fs fs-3"></i>Inactive users</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/BlockUsers']">
+            <h6><i class="bi bi-person-dash fs fs-3"></i>Block users</h6>
+          </div>
+        </div>
+      </details>
+
+      <details class="item details-dropdown" (toggle)="closeOthers($event)">
+        <summary>
+          <span class="title">
+            <i class="bi bi-book fs-3"></i>
+            <h5>Books</h5>
+          </span>
+          <i class="bi bi-chevron-down arrow"></i>
+        </summary>
+        <div class="dropdown-content">
+          <div [routerLink]="['/Dashboard/AvailableBooks']">
+            <h6><i class="bi bi-bookmark-check fs fs-3"></i>Available Books</h6>
+          </div>
+          <div  [routerLink]="['/Dashboard/Author']">
+            <h6><i class="bi bi-pencil-square fs fs-3"></i>Author</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/Categorie']">
+            <h6><i class="bi bi-tags fs fs-3"></i>Categorie books</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/PlacementBooks']">
+            <h6><i class="bi bi-geo-alt fs fs-3"></i>Placement books</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/Collections']">
+            <h6><i class="bi bi-collection fs fs-3"></i>Collections</h6>
+          </div>
+        </div>
+      </details>
+
+      <details class="item details-dropdown" (toggle)="closeOthers($event)">
+        <summary>
+          <span class="title">
+            <i class="bi bi-journal-check fs-3"></i>
+            <h5>Borrow</h5>
+          </span>
+          <i class="bi bi-chevron-down arrow"></i>
+        </summary>
+        <div class="dropdown-content">
+          <div [routerLink]="['/Dashboard/AllBorrowed']">
+            <h6><i class="bi bi-journal-text fs fs-4"></i>All borrowed books</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/CurrentBorrowed']">
+            <h6><i class="bi bi-journal-arrow-down fs fs-4"></i>Current borrowed books</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/LateBorrowed']">
+            <h6><i class="bi bi-journal-x fs fs-4"></i>Late borrowed books</h6>
+          </div>
+        </div>
+      </details>
+
+      <details class="item details-dropdown" (toggle)="closeOthers($event)">
+        <summary>
+          <span class="title">
+            <i class="bi bi-bar-chart-line fs-3"></i>
+            <h5>Statistics</h5>
+          </span>
+          <i class="bi bi-chevron-down arrow"></i>
+        </summary>
+        <div class="dropdown-content">
+          <div [routerLink]="['/Dashboard/StatisticsUser']">
+            <h6><i class="bi bi-person-lines-fill fs fs-3"></i>users</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/StatisticsBook']">
+            <h6><i class="bi bi-book-half fs fs-3"></i>books</h6>
+          </div>
+          <div [routerLink]="['/Dashboard/StatisticsBorrow']">
+            <h6><i class="bi bi-clipboard-data fs fs-3"></i>borrowed books</h6>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+
+
+
+    <!-- Bottom -->
+    <div class="sidebarBottom">
+      <div class="themeToggle" (click)="toggleTheme()">
+        <i class="bi" [ngClass]="theme === 'light' ? 'bi-moon fs-3' : 'bi-sun fs-3'"></i>
+        <h5>{{ theme | titlecase }} Mode</h5>
+      </div>
+      <hr>
+      <div class="logout">
+        <h6>{{ username }}</h6>
+        <i class="bi bi-box-arrow-right fs-3"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Page -->
+  <div class="mainpage">
+    <router-outlet></router-outlet>
+  </div>
+</div>

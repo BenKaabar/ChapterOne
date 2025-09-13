@@ -1,0 +1,11 @@
+<div class="main" [ngClass]="theme">
+    <div class="top">
+        <h4 class="title">Book Placement</h4>
+    </div>
+    <div class="bottom">
+        <div class="card" *ngFor="let place of fakeplacement" (click)="detailPlacement(place.number)">
+            <strong>{{ place.name }}</strong>
+            <div>{{ place.number }}</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,193 @@
+/* Main container */
+.main {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebarTop h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.sidebarMiddle .item {
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    margin: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.sidebarMiddle .item:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebarMiddle .item i {
+    margin-right: 10px;
+}
+
+.sidebarBottom {
+    text-align: center;
+}
+
+.sidebarBottom .themeToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.sidebarBottom .themeToggle h5 {
+    margin: 0px;
+    margin-left: 10px;
+}
+
+.sidebarBottom .themeToggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebarBottom .logout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.sidebarBottom .logout h6 {
+    margin: 0px;
+}
+
+.sidebarBottom .logout i {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+/* Main content */
+.mainpage {
+    width: 80%;
+    overflow-y: hidden;
+    max-height: 100vh;
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ---------------- Light Theme ---------------- */
+.light {
+    background-color: #FFF6ED;
+    color: #4B3832;
+}
+
+.light .sidebar {
+    background-color: #D9C3B1;
+    color: #4B3832;
+}
+
+.light .sidebar .item:hover {
+    background: #A9746E;
+    color: #ffffff;
+}
+
+.light .mainpage {
+    background-color: #FFF6ED;
+    color: #4B3832;
+}
+
+/* ---------------- Dark Theme ---------------- */
+.dark {
+    background-color: #2C1A16;
+    color: #FFEAD6;
+}
+
+.dark .sidebar {
+    background-color: #4B3832;
+    color: #FFEAD6;
+}
+
+.dark .sidebar .item:hover {
+    background: #A9746E;
+    color: #ffffff;
+}
+
+.dark .mainpage {
+    background-color: #24120F;
+    color: #FFEAD6;
+}
+
+
+
+
+
+
+
+
+.sidebarMiddle details[open] .arrow {
+    transform: rotate(180deg);
+}
+
+.sidebarMiddle details summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+.sidebarMiddle details .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-start; */
+    background-color: inherit;
+    width: 220px;
+    box-sizing: border-box;
+}
+
+.sidebarMiddle details .dropdown-content div:hover {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.details-dropdown {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.title {
+    display: flex;
+}
+
+.title h5 {
+    display: flex;
+    align-items: center;
+    margin: 0px;
+}
+
+.sidebarMiddle h6,
+.sidebarMiddle i {
+    display: flex;
+    align-items: center;
+    margin: 2px 0px;
+}
